@@ -381,8 +381,7 @@ public void MusicStart() {
       .setCaptionLabel("Music Stop");
       musicE = false;
       hrChart.setColors("heart_rate", colors.get("pink"));
-      heartRate.prev_heart_rates = new ArrayList<Integer>();
-
+      heartRate.resetPrev();
   } else{
     music = true;
     cp5.getController("MusicStart")

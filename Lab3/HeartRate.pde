@@ -3,7 +3,7 @@ import controlP5.*;
 
 class HeartRate {
 
-  private ArrayList prev_heart_rates, hrList;
+  public ArrayList prev_heart_rates, hrList;
   private long start_time, beat_time, beat_length, last_beat;
   private Clock time;
   private controlP5.Textarea hr_text, zone_text;
@@ -24,6 +24,10 @@ class HeartRate {
     beat = false;
     reset();
   }
+  
+  public void resetPrev() {
+    prev_heart_rates = new ArrayList<Integer>();
+  }
 
   public void calcZones(int age) {
     maxHR = 220 - age;
@@ -34,12 +38,12 @@ class HeartRate {
 
   public void inputData(float inByte) {
 
-    if (!beat && inByte > 700) {
+    if (!beat && inByte > 520) {
       beat = true;
       beatStart();
     }
   
-    if (beat && inByte < 700) {
+    if (beat && inByte < 520) {
       beat = false;
     }
 
