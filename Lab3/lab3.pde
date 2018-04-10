@@ -13,14 +13,19 @@ HeartRate heartRate;
 Chart hrChart;
 Chart pie;
 Slider slider;
+Slider breathingSlider;
 BufferedReader reader;
 Clock time;
 float inByte;
+int breathingSliderVal = 50;
 
+
+long interval_time = 0;
 long time_last_read = 0;
 long start_time;
 boolean riddle, music, hr_changed, retrieved_hr_avg = false;
 boolean use_file = false;
+boolean ascending = true;
 int age;
 boolean riddleE =false, musicE = false, start = false;
 int BPM, IBI;
@@ -38,7 +43,7 @@ void setup (){
   } else {
     println("Trying to use serial port");
     try {
-    myPort = new Serial(this, Serial.list()[0], 9600);
+    myPort = new Serial(this, Serial.list()[1], 9600);
     myPort.bufferUntil('\n');
     } catch (Exception e) {
       hr_text.setText("NO SERIAL");
@@ -59,9 +64,9 @@ void setup (){
 
 
   hrChart = cp5.addChart("hr chart")
-            .setPosition(220, 15)
-            .setSize(980, 600)
-            .setRange(0, 1023)
+            .setPosition(240, 15)
+            .setSize(960, 600)
+            .setRange(405, 595)
             .setView(Chart.LINE) // use Chart.LINE, Chart.PIE, Chart.AREA, Chart.BAR_CENTERED
             .setStrokeWeight(2.5)
             ;
@@ -165,7 +170,17 @@ void setup (){
      .setSize(200,20)
      .setRange(30,220)
      .setValue(31)
+     .setCaptionLabel("")
      ;
+     
+  breathingSlider = cp5.addSlider("Breath Slider")
+     .setPosition(220,-90)
+     .setSize(20, 615)
+     .setRange(0,100)
+     .setValue(breathingSliderVal)
+     ;
+     
+  cp5.getController("Breath Slider").moveTo("Meditation Mode");
   cp5.getController("HR Slider").moveTo("global");
 
   
@@ -254,6 +269,23 @@ void setup (){
 public void draw(){
   background(0x444444);
   ibiText.setText(Integer.toString(IBI));
+  
+  if (time.millis() - interval_time > 30) {
+    interval_time = time.millis();
+    if (ascending) {
+      breathingSliderVal++;
+    } else {
+      breathingSliderVal--;
+    }
+    if (breathingSliderVal <= 0) {
+      ascending = true;
+    } else if (breathingSliderVal >=100) {
+      ascending = false;
+    }
+    breathingSlider.setValue(breathingSliderVal);
+  }
+  
+  
   if(BPM > 50){
     cp5.getController("HR Slider").setValue(BPM);
 
@@ -300,8 +332,6 @@ public void draw(){
     heartRate.inputData(inByte);
     time_last_read = time.millis();
   } else if (!use_file && hr_changed) {
-    print("InByte is ");
-    println(inByte);
     heartRate.inputData(inByte);
     hr_changed = false;
   }
