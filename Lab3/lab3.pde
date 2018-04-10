@@ -11,6 +11,8 @@ controlP5.Textarea musHR_text, musRESP_text;
 controlP5.Textarea base_hr_text, ibiText;
 HeartRate heartRate;
 Chart hrChart;
+Chart pie;
+Slider slider;
 BufferedReader reader;
 Clock time;
 float inByte;
@@ -18,7 +20,7 @@ float inByte;
 long time_last_read = 0;
 long start_time;
 boolean riddle, music, hr_changed, retrieved_hr_avg = false;
-boolean use_file = true;
+boolean use_file = false;
 int age;
 boolean riddleE =false, musicE = false, start = false;
 int BPM, IBI;
@@ -33,7 +35,15 @@ void setup (){
       e.printStackTrace();
       use_file = false;
     }
-  }
+  } else {
+    println("Trying to use serial port");
+    try {
+    myPort = new Serial(this, Serial.list()[0], 9600);
+    myPort.bufferUntil('\n');
+    } catch (Exception e) {
+      hr_text.setText("NO SERIAL");
+    }
+   }
 
   time = Clock.systemUTC();
   cp5 = new ControlP5(this);
@@ -63,6 +73,20 @@ void setup (){
   size(1200,615);
   background(0x444444);
   Tabs.addTabs(cp5, createFont("arial",30));
+  
+  
+    pie = cp5.addChart("breathing")
+               .setPosition(10, 300)
+               .setSize(200, 100)
+               .setRange(-20, 20)
+               .setView(Chart.PIE) // use Chart.LINE, Chart.PIE, Chart.AREA, Chart.BAR_CENTERED
+               .setStrokeWeight(1.5)
+               .setColorCaptionLabel(color(40))
+               ;
+               
+             cp5.getController("breathing").moveTo("global");
+  
+
 
 /***************************************************************************************************/  
 /**********************GLOBAL*****************************************************************************/
@@ -106,7 +130,7 @@ void setup (){
   cp5.addTextlabel("HR label")
     .setFont(createFont("arial",20))
     .setPosition(10, 535)
-    .setValue("BPM:");
+    .setValue("BPM");
     
   hr_text = cp5.addTextarea("HR")
     .setFont(createFont("arial",20))
@@ -136,7 +160,7 @@ void setup (){
   cp5.getController("Start").moveTo("global");
   
   
-  cp5.addSlider("HR Slider")
+  slider = cp5.addSlider("HR Slider")
      .setPosition(10,560)
      .setSize(200,20)
      .setRange(30,220)
@@ -276,6 +300,8 @@ public void draw(){
     heartRate.inputData(inByte);
     time_last_read = time.millis();
   } else if (!use_file && hr_changed) {
+    print("InByte is ");
+    println(inByte);
     heartRate.inputData(inByte);
     hr_changed = false;
   }
@@ -404,6 +430,8 @@ void serialEvent (Serial myPort) {
     
     hrString = array[2];
     hrString = trim(hrString);
+    
+    
     BPM = int(array[0]);
     IBI = int(array[1]);
         //cp5.getController("HR Slider").setValue(BPM);

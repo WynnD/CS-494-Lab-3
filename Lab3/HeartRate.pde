@@ -47,6 +47,8 @@ class HeartRate {
     hr_chart.push("heart_rate", inByte);
     hr_changed = false;
   }
+  
+
 
   
 
@@ -104,6 +106,19 @@ class HeartRate {
     for (int i = 0; i < zones.length; ++i) {
       if (hr < zones[i]) {
         hrChart.setColors("heart_rate", colors.get(colors_array[i]));
+        //slider.setColors("heart_rate", colors.get(colors_array[i]));
+        //zone_text.setText(zones_array[i]);
+        return;
+      }
+    }
+  }
+  
+  void setSliderColor(){
+        String[] colors_array = {"grey", "blue", "green", "orange", "red"};
+        for (int i = 0; i < zones.length; ++i) {
+      if (BPM < zones[i]) {
+        slider.setColorValue(colors.get(colors_array[i]));
+        //slider.setColors("heart_rate", colors.get(colors_array[i]));
         //zone_text.setText(zones_array[i]);
         return;
       }
