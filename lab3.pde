@@ -13,6 +13,7 @@ HeartRate heartRate;
 Chart hrChart;
 BufferedReader reader;
 Clock time;
+float inByte;
 
 long time_last_read = 0;
 long start_time;
@@ -216,12 +217,14 @@ public void draw(){
     riddleE = false;
   }
   */
-  float inByte;
 
-  if (use_file && (time_last_read == 0 || time.millis() - time_last_read > 20)) {
+  if (use_file && (time_last_read == 0 || time.millis() - time_last_read > 20)) { // limit reading from file to every 20ms (sample rate our test data ran at)
     inByte = readFromFile();
     heartRate.inputData(inByte);
     time_last_read = time.millis();
+  } else if (!use_file && hr_changed) {
+    heartRate.inputData(inByte);
+    hr_changed = false;
   }
   
 
@@ -232,6 +235,8 @@ public void draw(){
     println("retrieved avg hr");
     hrChart.setColors("heart_rate", colors.get("white"));
   }
+
+
 
 }
 
@@ -296,7 +301,6 @@ float readFromFile() {
 void serialEvent (Serial myPort) {
   // get the ASCII string:
   String hrString = myPort.readStringUntil('\n');
-  float inByte;
   if (hrString != null) {
     String array[] = hrString.split(",");
     if (array.length != 3) {
