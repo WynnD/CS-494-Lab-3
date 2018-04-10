@@ -23,9 +23,9 @@ int breathingSliderVal = 50;
 long interval_time = 0;
 long time_last_read = 0;
 long start_time;
-boolean riddle, music, hr_changed, retrieved_hr_avg = false;
 boolean use_file = false;
 boolean ascending = true;
+boolean riddle = true, music = true, hr_changed, retrieved_hr_avg = false;
 int age;
 boolean riddleE =false, musicE = false, start = false;
 int BPM, IBI;
@@ -79,17 +79,7 @@ void setup (){
   background(0x444444);
   Tabs.addTabs(cp5, createFont("arial",30));
   
-  
-    pie = cp5.addChart("breathing")
-               .setPosition(10, 300)
-               .setSize(200, 100)
-               .setRange(-20, 20)
-               .setView(Chart.PIE) // use Chart.LINE, Chart.PIE, Chart.AREA, Chart.BAR_CENTERED
-               .setStrokeWeight(1.5)
-               .setColorCaptionLabel(color(40))
-               ;
-               
-             cp5.getController("breathing").moveTo("global");
+ 
   
 
 
@@ -195,7 +185,7 @@ void setup (){
       .setCaptionLabel("Music Start")
       ;
     
-  cp5.getController("MusicStart").moveTo("Meditation Mode");
+  cp5.getController("MusicStart").moveTo("Stress Mode");
     
   
   cp5.addTextlabel("HRMus")
@@ -207,8 +197,8 @@ void setup (){
   .setPosition(100, 160)
   .setText("N/A")
   ;
-  cp5.getController("HRMus").moveTo("Meditation Mode");
-  musHR_text.moveTo("Meditation Mode");
+  cp5.getController("HRMus").moveTo("Stress Mode");
+  musHR_text.moveTo("Stress Mode");
   
 
   
@@ -219,7 +209,7 @@ void setup (){
   ;
   
   
-  cp5.getController("RiddleStart").moveTo("Meditation Mode");
+  cp5.getController("RiddleStart").moveTo("Stress Mode");
   
   
   cp5.addTextlabel("RiddleLabel")
@@ -231,8 +221,8 @@ void setup (){
     .setPosition(100, 290)
     .setText("N/A")
     ;  
-  cp5.getController("RiddleLabel").moveTo("Meditation Mode");
-  riddleHR_text.moveTo("Meditation Mode");
+  cp5.getController("RiddleLabel").moveTo("Stress Mode");
+  riddleHR_text.moveTo("Stress Mode");
   
   music = true;
   riddle = true;
@@ -296,6 +286,9 @@ public void draw(){
     cp5.getController("HR Slider").setValue(31);
 
   }
+  
+  slider.setRange(50, heartRate.maxHR)
+  .setCaptionLabel(Integer.toString(heartRate.maxHR));
 
 
   //text("IBI " + IBI + "mS",600,585);                    // print the time between heartbeats in mS
@@ -356,14 +349,23 @@ public void controlEvent(ControlEvent theEvent) {
 }
 
 
+
+
 public void RiddleStart() {
+  
   if (riddle) {
     riddle = false;
     
     cp5.getController("RiddleStart")
       .setCaptionLabel("Riddle Stop");
+      
       riddleE = false;
-  } else {
+      hrChart.setColors("heart_rate", colors.get("pink"));
+      heartRate.prev_heart_rates = new ArrayList<Integer>();
+      
+      
+  } 
+  else {
     riddle = true;
     
     cp5.getController("RiddleStart")
@@ -378,6 +380,9 @@ public void MusicStart() {
     cp5.getController("MusicStart")
       .setCaptionLabel("Music Stop");
       musicE = false;
+      hrChart.setColors("heart_rate", colors.get("pink"));
+      heartRate.prev_heart_rates = new ArrayList<Integer>();
+
   } else{
     music = true;
     cp5.getController("MusicStart")
