@@ -11,11 +11,10 @@
 
 import controlP5.*;
 
-class Tabs {
-    private PFont pfont = createFont("arial",30);
-    private ControlFont font = new ControlFont(pfont,18);
-    public void addTabs(ControlP5 cp5) {
-        cp5.addTab("StressMode")
+static class Tabs {
+    public static void addTabs(ControlP5 cp5, PFont pfont) {
+        ControlFont font = new ControlFont(pfont,18);
+        cp5.addTab("Fitness Mode")
             .setValue(100)
             .setPosition(10,60)
             .setSize(200,30)
@@ -35,7 +34,7 @@ class Tabs {
             .setId(1)
             ;*/
             
-            cp5.getTab("StressMode")
+        cp5.getTab("Fitness Mode")
             .activateEvent(true)
             .setId(2)
             ;
