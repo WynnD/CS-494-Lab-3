@@ -106,7 +106,7 @@ void setup (){
   cp5.addTextlabel("HR label")
     .setFont(createFont("arial",20))
     .setPosition(10, 535)
-    .setValue("HR:");
+    .setValue("BPM:");
     
   hr_text = cp5.addTextarea("HR")
     .setFont(createFont("arial",20))
@@ -137,10 +137,10 @@ void setup (){
   
   
   cp5.addSlider("HR Slider")
-     .setPosition(10,300)
+     .setPosition(10,560)
      .setSize(200,20)
-     .setRange(10,heartRate.maxHR)
-     .setValue(11)
+     .setRange(30,220)
+     .setValue(31)
      ;
   cp5.getController("HR Slider").moveTo("global");
 
@@ -156,20 +156,20 @@ void setup (){
       .setCaptionLabel("Music Start")
       ;
     
-  cp5.getController("MusicStart").moveTo("Fitness Mode");
+  cp5.getController("MusicStart").moveTo("Meditation Mode");
     
   
   cp5.addTextlabel("HRMus")
   .setFont(createFont("arial",20))
   .setPosition(10, 160)
-  .setValue("Avg HR:");
+  .setValue("Avg BPM:");
   musHR_text = cp5.addTextarea("MusHR")
   .setFont(createFont("arial", 20))
   .setPosition(100, 160)
   .setText("N/A")
   ;
-  cp5.getController("HRMus").moveTo("Fitness Mode");
-  musHR_text.moveTo("Fitness Mode");
+  cp5.getController("HRMus").moveTo("Meditation Mode");
+  musHR_text.moveTo("Meditation Mode");
   
 
   
@@ -180,20 +180,20 @@ void setup (){
   ;
   
   
-  cp5.getController("RiddleStart").moveTo("Fitness Mode");
+  cp5.getController("RiddleStart").moveTo("Meditation Mode");
   
   
   cp5.addTextlabel("RiddleLabel")
   .setFont(createFont("arial",20))
   .setPosition(10, 290)
-  .setValue("Avg HR:");
+  .setValue("Avg BPM:");
   riddleHR_text = cp5.addTextarea("riddleHR")
     .setFont(createFont("arial", 20))
     .setPosition(100, 290)
     .setText("N/A")
     ;  
-  cp5.getController("RiddleLabel").moveTo("Fitness Mode");
-  riddleHR_text.moveTo("Fitness Mode");
+  cp5.getController("RiddleLabel").moveTo("Meditation Mode");
+  riddleHR_text.moveTo("Meditation Mode");
   
   music = true;
   riddle = true;
@@ -230,7 +230,16 @@ void setup (){
 public void draw(){
   background(0x444444);
   ibiText.setText(Integer.toString(IBI));
-  cp5.getController("HR Slider").setValue(BPM);
+  if(BPM > 50){
+    cp5.getController("HR Slider").setValue(BPM);
+
+  
+  }
+  else{
+  
+    cp5.getController("HR Slider").setValue(31);
+
+  }
 
 
   //text("IBI " + IBI + "mS",600,585);                    // print the time between heartbeats in mS
@@ -243,7 +252,7 @@ public void draw(){
     //musRESP_text.setText(Integer.toString(br_avg));
     println("retrieved avg hr and resp rate");
    // println(resp_avg);
-   // hrChart.setColors("heart_rate", colors.get("white"));
+    hrChart.setColors("heart_rate", colors.get("white"));
     //respChart.setColors("heart_rate", colors.get("white"));
     musicE = false;
   }
@@ -256,7 +265,7 @@ public void draw(){
     retrieved_hr_avg = true;
     println("retrieved avg hr and resp rate");
     //println(resp_avg);
-    //hrChart.setColors("heart_rate", colors.get("white"));
+    hrChart.setColors("heart_rate", colors.get("white"));
    // respChart.setColors("heart_rate", colors.get("white"));
     riddleE = false;
   }
@@ -272,7 +281,7 @@ public void draw(){
   }
   
 
-  if (!retrieved_hr_avg && start == true && time.millis() - start_time > 30000) {
+  if ( start == true && time.millis() - start_time > 30000) {
     int avg = heartRate.getAvgHr();
     base_hr_text.setText(Integer.toString(avg));
     retrieved_hr_avg = true;
@@ -333,7 +342,7 @@ void starts(){
       hrChart.setColors("heart_rate", colors.get("pink"));
       //respChart.setColors("resp_rate", colors.get("pink"));
       start = true;
-     // start_time = time.millis();
+      start_time = time.millis();
       heartRate.prev_heart_rates = new ArrayList<Integer>();
      // heartRate.prev_resp = new ArrayList<Float>();
      // heartRate.prev_resp_rates = new ArrayList<Integer>();
@@ -341,7 +350,7 @@ void starts(){
       //retrieved_resp_avg_val = false;
      // resp_avg = -1;
      // resp_avg_val = 0;
-      //prev_heart_rates.clear();
+      heartRate.prev_heart_rates.clear();
       //prev_resp.clear();
       
   }
@@ -365,7 +374,7 @@ float readFromFile() {
       return -1.0;
     }
     String hrString = array[2];
-    BPM = int(hrString);
+    BPM = int(array[0]);
     IBI = int(array[1]);
     //cp5.getController("HR Slider").setValue(BPM);
     float inByte = float(hrString);
@@ -395,7 +404,7 @@ void serialEvent (Serial myPort) {
     
     hrString = array[2];
     hrString = trim(hrString);
-    BPM = int(hrString);
+    BPM = int(array[0]);
     IBI = int(array[1]);
         //cp5.getController("HR Slider").setValue(BPM);
 

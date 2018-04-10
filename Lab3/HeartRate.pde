@@ -3,7 +3,7 @@ import controlP5.*;
 
 class HeartRate {
 
-  private ArrayList prev_heart_rates;
+  private ArrayList prev_heart_rates, hrList;
   private long start_time, beat_time, beat_length, last_beat;
   private Clock time;
   private controlP5.Textarea hr_text, zone_text;
@@ -82,7 +82,8 @@ class HeartRate {
   int calcHr() {
     double sec_per_beat = beat_length/1000.0;
     Double min_per_beat = sec_per_beat/60.0;
-    hr = (int)(1/min_per_beat);
+   // hr = (int)(1/min_per_beat);
+    hr = BPM;
     if (hr < 220) {
       println("cached hr");
       prev_heart_rates.add(hr);
